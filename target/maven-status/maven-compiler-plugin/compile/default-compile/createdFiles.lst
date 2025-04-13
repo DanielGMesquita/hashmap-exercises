@@ -1,4 +1,5 @@
 com/interview/hashmapdemo/problem4/EqualsVsDoubleEqualsProblem$1Employee.class
+com/interview/hashmapdemo/problem8/KeyOrderingProblem.class
 com/interview/hashmapdemo/BrokenHashMapDemo.class
 com/interview/hashmapdemo/problem2/MutatingKeyProblem$1MutableKey.class
 com/interview/hashmapdemo/problem3/HashCollisionProblem.class
@@ -6,9 +7,11 @@ com/interview/hashmapdemo/problem3/HashCollisionProblem$1BadHashKey.class
 com/interview/hashmapdemo/problem5/ConcurrentModificationProblem.class
 com/interview/hashmapdemo/problem4/EqualsVsDoubleEqualsProblem.class
 com/interview/hashmapdemo/problem1/IncorrectHashCodeEqualsProblem.class
+com/interview/hashmapdemo/problem9/SerializationProblem.class
 com/interview/hashmapdemo/problem6/NullKeyProblem$1CustomMap.class
 com/interview/hashmapdemo/HashMapProblem.class
 com/interview/hashmapdemo/problem6/NullKeyProblem.class
 com/interview/hashmapdemo/problem1/IncorrectHashCodeEqualsProblem$1PersonCorrect.class
 com/interview/hashmapdemo/problem2/MutatingKeyProblem.class
 com/interview/hashmapdemo/problem1/IncorrectHashCodeEqualsProblem$1PersonBadHashCode.class
+com/interview/hashmapdemo/problem7/LoadFactorProblem.class

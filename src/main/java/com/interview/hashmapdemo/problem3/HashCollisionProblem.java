@@ -38,8 +38,7 @@ public class HashCollisionProblem implements HashMapProblem {
 
             @Override
             public int hashCode() {
-                // Péssima implementação: sempre retorna o mesmo valor!
-                return 42;
+                return Objects.hash(value);
             }
 
             @Override
