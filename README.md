@@ -1,115 +1,105 @@
 # HashMap Problems Demo
 
-Este projeto demonstra problemas comuns relacionados à implementação e uso de HashMaps em Java. Foi projetado para servir como exercício em entrevistas de codificação ao vivo, focando em situações problemáticas que frequentemente ocorrem ao trabalhar com HashMaps.
+Este projeto demonstra **problemas comuns relacionados à implementação e uso de `HashMap` em Java**. Foi projetado para ser utilizado como **exercício em entrevistas de codificação ao vivo**, servindo tanto para avaliação técnica quanto para discussão conceitual sobre estruturas de dados e boas práticas de programação.
 
-## Visão Geral dos Problemas
+## 🔍 Visão Geral do `HashMap` em Java
 
-O projeto contém seis problemas comuns de HashMap:
+O `HashMap` é uma estrutura de dados da biblioteca padrão Java que **implementa a interface `Map`**, permitindo o armazenamento de pares chave-valor (`key-value`). Sua principal característica é o acesso rápido aos dados, com **complexidade média O(1)** para operações de inserção, remoção e busca.
 
-### 1. Implementação incorreta de hashCode() ou equals()
-**Problema:** Objetos usados como chaves em um HashMap não são encontrados mesmo quando parecem logicamente iguais.  
-**Causa:** A classe personalizada sobrescreve apenas um dos métodos hashCode() ou equals(), ou o faz incorretamente.  
-**Impacto:** O HashMap não consegue recuperar um objeto porque sua lógica depende da implementação correta de ambos os métodos.
+Internamente, o `HashMap` funciona por meio de:
 
-### 2. Mutando objetos de chave após inserção
-**Problema:** Um objeto chave é modificado após ser colocado no HashMap, e futuras pesquisas usando o mesmo objeto falham.  
-**Causa:** O código hash da chave muda após a inserção, então acaba no bucket errado.  
-**Impacto:** O objeto se torna inacessível pela busca normal, efetivamente "perdido" no mapa.
+- **Tabela hash**: Um array de "buckets", onde cada bucket pode armazenar múltiplas entradas.
+- **Função `hashCode()`**: Utilizada para determinar o bucket onde uma chave deve ser colocada.
+- **Método `equals()`**: Utilizado para comparar chaves logicamente dentro de um bucket.
+- **Tratamento de colisões**: Se múltiplas chaves tiverem o mesmo hash, elas são armazenadas no mesmo bucket por meio de uma lista encadeada ou uma árvore balanceada (desde o Java 8, quando o número de colisões ultrapassa um limiar).
 
-### 3. Colisões de hash e má distribuição
-**Problema:** Múltiplas chaves são colocadas no mesmo bucket, degradando o desempenho de O(1) para O(n).  
-**Causa:** Uma função hashCode() mal projetada (por exemplo, sempre retornando o mesmo valor).  
-**Impacto:** Operações em HashMap se tornam significativamente mais lentas devido à necessidade de pesquisa linear em listas vinculadas dentro de um bucket.
+**Desempenho ideal** depende de uma **boa função de espalhamento (`hashCode`)**, além do **respeito ao contrato entre `hashCode()` e `equals()`**.
 
-### 4. Usando == em vez de .equals() para chaves de objeto
-**Problema:** Duas chaves logicamente iguais não são correspondidas no mapa.  
-**Causa:** Lógica de pesquisa manual (por exemplo, iterar e usar == em vez de equals()).  
-**Impacto:** Comparações falham porque == compara referências de objeto, não seus valores lógicos.
+---
 
-### 5. Modificação concorrente
-**Problema:** Um HashMap é modificado por múltiplas threads, causando corrupção de dados ou loops infinitos.  
-**Causa:** HashMap não é thread-safe.  
-**Impacto:** Comportamento imprevisível, incluindo perda de dados, loops infinitos ou exceções ConcurrentModificationException.
+## ⚠️ Visão Geral dos Problemas Demonstrados
 
-### 6. Problemas com chaves null
-**Problema:** Chaves null causam comportamento inesperado ou exceções em várias implementações de Map.  
-**Causa:** Nem todas as implementações de Map suportam chaves null (HashMap permite, mas Hashtable e algumas implementações personalizadas não).  
-**Impacto:** NullPointerException ou outros comportamentos indefinidos quando null é usado como chave.
+Este projeto contém **seis classes de problemas recorrentes** em implementações com `HashMap`. Cada um deles destaca armadilhas comuns que podem impactar diretamente a correção e o desempenho da aplicação.
 
-## Requisitos
+### 1. Implementação Incorreta de `hashCode()` ou `equals()`
+
+**Problema**: Objetos usados como chaves não são encontrados, mesmo quando parecem iguais.
+
+- **Causa**: A classe sobrescreve apenas `equals()` ou `hashCode()`, ou os implementa incorretamente.
+- **Consequência**: O `HashMap` não consegue localizar a entrada, pois depende dos dois métodos estarem corretamente definidos.
+
+📌 **Contrato de igualdade**:
+- Se `a.equals(b)` for `true`, então `a.hashCode() == b.hashCode()` **deve** ser verdadeiro.
+
+---
+
+### 2. Mutação de Chaves Após Inserção
+
+**Problema**: Um objeto usado como chave é alterado após ter sido inserido no `HashMap`, tornando-o irreconhecível na busca posterior.
+
+- **Causa**: A alteração afeta atributos usados no cálculo de `hashCode()` ou `equals()`.
+- **Consequência**: O objeto "desaparece" do mapa, pois sua chave original não é mais válida.
+
+📌 **Boa prática**: Use **objetos imutáveis como chaves** sempre que possível.
+
+---
+
+### 3. Colisões de Hash e Má Distribuição
+
+**Problema**: Muitas chaves diferentes são mapeadas para o mesmo bucket.
+
+- **Causa**: Função `hashCode()` mal projetada, como sempre retornar o mesmo valor.
+- **Consequência**: O desempenho se degrada para **O(n)** em vez de O(1), pois as buscas percorrem listas ou árvores dentro de um bucket.
+
+📌 **Impacto real**: Com grandes volumes de dados, pode haver **problemas de performance severos**.
+
+---
+
+### 4. Uso de `==` em vez de `.equals()` na Comparação de Chaves
+
+**Problema**: Chaves logicamente equivalentes não são consideradas iguais durante busca manual.
+
+- **Causa**: O uso do operador `==`, que compara **referências de memória**, em vez de `.equals()`, que compara conteúdo lógico.
+- **Consequência**: A busca falha mesmo que os objetos representem a mesma informação.
+
+📌 **Exemplo clássico**: Comparar duas `String` com `==` pode dar `false`, mesmo que os textos sejam idênticos.
+
+---
+
+### 5. Modificação Concorrente
+
+**Problema**: Um `HashMap` é acessado/modificado por múltiplas threads simultaneamente sem sincronização.
+
+- **Causa**: O `HashMap` **não é thread-safe**.
+- **Consequência**: Corrupção de dados, exceções (`ConcurrentModificationException`), ou loops infinitos.
+
+📌 **Soluções**:
+- Use `Collections.synchronizedMap(...)` para sincronizar.
+- Use `ConcurrentHashMap` para performance e segurança em ambientes multithread.
+
+---
+
+### 6. Problemas com Chaves `null`
+
+**Problema**: Uso de `null` como chave leva a exceções ou comportamento indefinido.
+
+- **Causa**: Embora `HashMap` aceite uma única chave `null`, **outras implementações de `Map` como `Hashtable` não aceitam**.
+- **Consequência**: Pode ocorrer `NullPointerException` ou falhas inesperadas ao trocar a implementação do `Map`.
+
+📌 **Boa prática**: Evitar chaves `null` sempre que possível.
+
+---
+
+## ⚙️ Requisitos
 
 - Java 11 ou superior
 - Maven
 
-## Como Executar
+---
+
+## 🚀 Como Executar
 
 ### Compilar o Projeto
+
 ```bash
 mvn clean compile
-```
-
-### Executar Todos os Problemas
-```bash
-java -cp target/classes com.interview.hashmapdemo.BrokenHashMapDemo
-```
-
-### Executar um Problema Específico
-```bash
-java -cp target/classes com.interview.hashmapdemo.BrokenHashMapDemo <número>
-```
-Onde `<número>` é o número do problema (1-6) que você deseja demonstrar.
-
-Exemplo para executar o problema de colisões de hash:
-```bash
-java -cp target/classes com.interview.hashmapdemo.BrokenHashMapDemo 3
-```
-
-## Estrutura do Projeto
-
-```
-hashmap-demo/
-├── pom.xml
-└── src/
-    └── main/
-        └── java/
-            └── com/
-                └── interview/
-                    └── hashmapdemo/
-                        ├── BrokenHashMapDemo.java (classe principal)
-                        ├── HashMapProblem.java (interface comum)
-                        ├── problem1/
-                        │   └── IncorrectHashCodeEqualsProblem.java
-                        ├── problem2/
-                        │   └── MutatingKeyProblem.java
-                        ├── problem3/
-                        │   └── HashCollisionProblem.java
-                        ├── problem4/
-                        │   └── EqualsVsDoubleEqualsProblem.java
-                        ├── problem5/
-                        │   └── ConcurrentModificationProblem.java
-                        └── problem6/
-                            └── NullKeyProblem.java
-```
-
-## Uso em Entrevistas de Codificação
-
-Este projeto é ideal para entrevistas de codificação ao vivo, pois permite:
-
-1. **Análise de código**: Peça ao candidato para identificar os problemas no código.
-2. **Resolução de problemas**: Peça ao candidato para corrigir os problemas encontrados.
-3. **Discussão conceitual**: Use o código como base para discutir estruturas de dados, hashing e boas práticas de programação.
-
-## Boas Práticas para HashMap
-
-Com base nos problemas demonstrados, aqui estão algumas boas práticas a seguir:
-
-1. **Sempre implemente hashCode() e equals() juntos** quando criar classes usadas como chaves em HashMap.
-2. **Não modifique objetos usados como chaves** após inseri-los em um HashMap.
-3. **Crie funções de hash que distribuam valores uniformemente** para evitar colisões.
-4. **Use sempre o método .equals()** para comparação de objetos, não o operador ==.
-5. **Use ConcurrentHashMap** para cenários multi-thread em vez de HashMap.
-6. **Tenha cuidado com chaves null** e saiba qual implementação de Map você está usando.
-
-## Contribuições
-
-Sinta-se à vontade para contribuir com exemplos adicionais ou aprimoramentos da base de código existente.
