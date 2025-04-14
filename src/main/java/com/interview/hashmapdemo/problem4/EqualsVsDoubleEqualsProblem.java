@@ -9,13 +9,13 @@ import java.util.Objects;
 public class EqualsVsDoubleEqualsProblem implements HashMapProblem {
     @Override
     public String getProblemName() {
-        return "Usando == em vez de .equals() para chaves de objeto";
+        return "Using == instead of .equals() for object keys";
     }
 
     @Override
     public String getProblemDescription() {
-        return "Duas chaves logicamente iguais não são correspondidas no mapa.\n" +
-                "Causa: Lógica de pesquisa manual (por exemplo, iterar e usar == em vez de equals()).";
+        return "Two logically equal keys are not matched in the map.\n" +
+                "Cause: Manual lookup logic (e.g., iterating and using == instead of equals()).";
     }
 
     @Override
@@ -51,24 +51,24 @@ public class EqualsVsDoubleEqualsProblem implements HashMapProblem {
         HashMap<Employee, String> employees = new HashMap<>();
 
         Employee alice1 = new Employee("E001", "Alice");
-        employees.put(alice1, "Departamento A");
+        employees.put(alice1, "Department A");
 
         Employee alice2 = new Employee("E001", "Alice");
 
-        // correto: usar o get() do HashMap
-        System.out.println("Método correto (HashMap.get): " + employees.get(alice2));
+        // Correct: use HashMap's get() method
+        System.out.println("Correct method (HashMap.get): " + employees.get(alice2));
 
-        // incorreto: iterar e comparar com ==
+        // Incorrect: iterate and compare using ==
         String incorrectResult = null;
         for (Map.Entry<Employee, String> entry : employees.entrySet()) {
-            if (entry.getKey() == alice2) { // Usando == em vez de equals()
+            if (entry.getKey() == alice2) { // Using == instead of equals()
                 incorrectResult = entry.getValue();
                 break;
             }
         }
-        System.out.println("Método incorreto (iteração com ==): " + incorrectResult);
+        System.out.println("Incorrect method (iteration with ==): " + incorrectResult);
 
-        // Verificação direta de ==
+        // Direct comparison using ==
         System.out.println("alice1 == alice2: " + (alice1 == alice2));
         System.out.println("alice1.equals(alice2): " + alice1.equals(alice2));
     }

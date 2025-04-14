@@ -8,15 +8,14 @@ import java.util.Objects;
 public class MutatingKeyProblem implements HashMapProblem {
     @Override
     public String getProblemName() {
-        return "Mutando objetos de chave após inserção";
+        return "Mutating objects after insertion into HashMap";
     }
 
     @Override
     public String getProblemDescription() {
-        return "Um objeto chave é modificado após ser colocado no HashMap, " +
-                "e futuras pesquisas usando o mesmo objeto falham.\n" +
-                "Causa: O código hash da chave muda após a inserção, " +
-                "então acaba no bucket errado.";
+        return "A key object is modified after being inserted into the HashMap.\n" +
+                "This can lead to unexpected behavior when trying to retrieve values using the modified key.\n" +
+                "The key's hash code and equality check may no longer match the original insertion.";
     }
 
     @Override
@@ -54,21 +53,21 @@ public class MutatingKeyProblem implements HashMapProblem {
         HashMap<MutableKey, String> map = new HashMap<>();
 
         MutableKey key = new MutableKey("original");
-        map.put(key, "valor original");
+        map.put(key, "original value");
 
-        System.out.println("Valor antes da mutação: " + map.get(key));
+        System.out.println("Value before mutation: " + map.get(key));
 
-        // Mudar a chave após inserção
-        key.setValue("modificado");
-        System.out.println("Valor após mutação: " + map.get(key));
+        // Change the key after insertion
+        key.setValue("modified");
+        System.out.println("Value after mutation: " + map.get(key));
 
-        // Criar uma nova chave com o valor original
+        // Create a new key with the same value as the original
         MutableKey originalKey = new MutableKey("original");
-        System.out.println("Consegue recuperar com chave equivalente ao valor original? " +
+        System.out.println("Can it retrieve the value using equivalent key to the original value? " +
                 (map.get(originalKey) != null));
 
-        // Demonstração de onde a chave modificada foi parar
-        System.out.println("Tamanho do mapa: " + map.size());
-        System.out.println("Conteúdo do mapa: " + map);
+        // Demonstration of the problem
+        System.out.println("Map size: " + map.size());
+        System.out.println("Map content: " + map);
     }
 }

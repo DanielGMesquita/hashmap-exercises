@@ -8,20 +8,20 @@ import java.util.Objects;
 public class IncorrectHashCodeEqualsProblem implements HashMapProblem {
     @Override
     public String getProblemName() {
-        return "Implementação incorreta de hashCode() ou equals()";
+        return "Incorrect HashCode and Equals Implementation";
     }
 
     @Override
     public String getProblemDescription() {
-        return "Objetos usados como chaves em um HashMap não são encontrados " +
-                "mesmo quando parecem logicamente iguais.\n" +
-                "Causa: A classe personalizada sobrescreve apenas um dos métodos " +
-                "hashCode() ou equals(), ou o faz incorretamente.";
+        return "Objects with the same logical value are not matched in the map.\n" +
+                "Cause: Incorrect implementation of equals() and hashCode().\n" +
+                "This can lead to unexpected behavior when using HashMap, " +
+                "as it relies on these methods to determine object equality.";
     }
 
     @Override
     public void demonstrate() {
-        // Classe com implementação incorreta - apenas equals() sobrescrito
+        // Class with incorrect implementation of equals() and hashCode() - only equals() is implemented
         class PersonBadHashCode {
             private String name;
             private int age;
@@ -40,15 +40,13 @@ public class IncorrectHashCodeEqualsProblem implements HashMapProblem {
                         Objects.equals(name, person.name);
             }
 
-            // Falta implementação de hashCode()!
-
             @Override
             public String toString() {
                 return name + " (" + age + ")";
             }
         }
 
-        // Classe com implementação correta
+        // Class with correct implementation of equals() and hashCode()
         class PersonCorrect {
             private String name;
             private int age;
@@ -78,7 +76,7 @@ public class IncorrectHashCodeEqualsProblem implements HashMapProblem {
             }
         }
 
-        // Demonstração com implementação incorreta
+        // Incorrectly implemented class
         HashMap<PersonBadHashCode, String> badMap = new HashMap<>();
         PersonBadHashCode john1 = new PersonBadHashCode("John", 30);
         badMap.put(john1, "Developer");
@@ -88,7 +86,7 @@ public class IncorrectHashCodeEqualsProblem implements HashMapProblem {
         System.out.println("badMap.containsKey(john2): " + badMap.containsKey(john2));
         System.out.println("Valor para john2: " + badMap.get(john2));
 
-        // Demonstração com implementação correta
+        // Correctly implemented class
         HashMap<PersonCorrect, String> goodMap = new HashMap<>();
         PersonCorrect mary1 = new PersonCorrect("Mary", 28);
         goodMap.put(mary1, "Designer");

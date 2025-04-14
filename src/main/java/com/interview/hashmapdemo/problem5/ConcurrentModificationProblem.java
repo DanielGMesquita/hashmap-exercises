@@ -12,102 +12,102 @@ import java.util.concurrent.TimeUnit;
 public class ConcurrentModificationProblem implements HashMapProblem {
     @Override
     public String getProblemName() {
-        return "Modificação concorrente";
+        return "Concurrent modification";
     }
 
     @Override
     public String getProblemDescription() {
-        return "Um HashMap é modificado por múltiplas threads, causando " +
-                "corrupção de dados ou loops infinitos.\n" +
-                "Causa: HashMap não é thread-safe.";
+        return "A HashMap is modified by multiple threads, causing " +
+                "data corruption or infinite loops.\n" +
+                "Cause: HashMap is not thread-safe.";
     }
 
     @Override
     public void demonstrate() {
-        // HashMap não seguro para threads
+        // Thread-unsafe HashMap
         final Map<Integer, String> unsafeMap = new HashMap<>();
 
-        // HashMap seguro para threads
+        // Thread-safe HashMap
         final Map<Integer, String> safeMap = new ConcurrentHashMap<>();
 
-        // Preencher inicialmente
+        // Initial population
         for (int i = 0; i < 100; i++) {
-            unsafeMap.put(i, "Valor " + i);
-            safeMap.put(i, "Valor " + i);
+            unsafeMap.put(i, "Value " + i);
+            safeMap.put(i, "Value " + i);
         }
 
-        // Modificar a partir de várias threads
+        // Modify from multiple threads
         ExecutorService executor = Executors.newFixedThreadPool(10);
 
-        System.out.println("Executando operações concorrentes...");
+        System.out.println("Running concurrent operations...");
 
         try {
-            // Modificações concorrentes no HashMap não seguro
+            // Concurrent modifications on the thread-unsafe HashMap
             for (int i = 0; i < 10; i++) {
                 final int base = i * 100;
                 executor.submit(() -> {
                     try {
                         for (int j = 0; j < 100; j++) {
                             unsafeMap.put(base + j, "Thread " + base + "-" + j);
-                            // Simular algum trabalho
+                            // Simulate some work
                             Thread.sleep(1);
                         }
                     } catch (Exception e) {
-                        System.out.println("Erro no unsafeMap: " + e.getMessage());
+                        System.out.println("Error in unsafeMap: " + e.getMessage());
                     }
                 });
             }
 
-            // Leitura concorrente
+            // Concurrent read
             executor.submit(() -> {
                 try {
                     for (Map.Entry<Integer, String> entry : unsafeMap.entrySet()) {
-                        // Apenas leitura
+                        // Read-only
                         String value = entry.getValue();
                     }
                 } catch (Exception e) {
-                    System.out.println("Erro ao iterar unsafeMap: " + e.getMessage());
+                    System.out.println("Error iterating over unsafeMap: " + e.getMessage());
                 }
             });
 
-            // Mesmo padrão com ConcurrentHashMap
+            // Same pattern with ConcurrentHashMap
             for (int i = 0; i < 10; i++) {
                 final int base = i * 100;
                 executor.submit(() -> {
                     try {
                         for (int j = 0; j < 100; j++) {
                             safeMap.put(base + j, "Thread " + base + "-" + j);
-                            // Simular algum trabalho
+                            // Simulate some work
                             Thread.sleep(1);
                         }
                     } catch (Exception e) {
-                        System.out.println("Erro no safeMap: " + e.getMessage());
+                        System.out.println("Error in safeMap: " + e.getMessage());
                     }
                 });
             }
 
-            // Leitura do map seguro
+            // Reading the thread-safe map
             executor.submit(() -> {
                 try {
                     for (Map.Entry<Integer, String> entry : safeMap.entrySet()) {
-                        // Apenas leitura
+                        // Read-only
                         String value = entry.getValue();
                     }
                 } catch (Exception e) {
-                    System.out.println("Erro ao iterar safeMap: " + e.getMessage());
+                    System.out.println("Error iterating over safeMap: " + e.getMessage());
                     e.printStackTrace();
                 }
             });
 
-            // Aguardar a conclusão ou timeout
+            // Wait for completion or timeout
             executor.shutdown();
             executor.awaitTermination(5, TimeUnit.SECONDS);
 
         } catch (Exception e) {
-            System.out.println("Exceção principal: " + e.getMessage());
+            System.out.println("Main exception: " + e.getMessage());
         }
 
-        System.out.println("Tamanho do unsafeMap após concorrência: " + unsafeMap.size());
-        System.out.println("Tamanho do safeMap após concorrência: " + safeMap.size());
+        System.out.println("Size of unsafeMap after concurrency: " + unsafeMap.size());
+        System.out.println("Size of safeMap after concurrency: " + safeMap.size());
     }
 }
